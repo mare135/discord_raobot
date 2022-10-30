@@ -1,63 +1,75 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import 'dotenv/config'
+import 'dotenv/config';
 
-import { Client, GatewayIntentBits, Collection, Partials } from 'discord.js'
-import { readdirSync } from 'fs'
-import type ApplicationCommand from './templates/ApplicationCommand.js'
-import type Event from './templates/Event.js'
-import type MessageCommand from './templates/MessageCommand.js'
-import deployGlobalCommands from './deployGlobalCommands.js'
-const { TOKEN } = process.env
+import {
+  Client,
+  GatewayIntentBits,
+  Collection,
+  Partials,
+  Snowflake,
+} from 'discord.js';
+import { readdirSync } from 'fs';
+import type ApplicationCommand from './templates/ApplicationCommand.js';
+import type Event from './templates/Event.js';
+import type MessageCommand from './templates/MessageCommand.js';
+import deployGlobalCommands from './deployGlobalCommands.js';
+import type MemberInfo from './classes/MemberInfo.js';
+const { TOKEN } = process.env;
 
-await deployGlobalCommands()
+await deployGlobalCommands();
 
 // Discord client object
 global.client = Object.assign(
-    new Client({
-        intents: [
-            GatewayIntentBits.Guilds,
-            GatewayIntentBits.GuildMessages,
-            GatewayIntentBits.DirectMessages,
-        ],
-        partials: [Partials.Channel],
-    }),
-    {
-        commands: new Collection<string, ApplicationCommand>(),
-        msgCommands: new Collection<string, MessageCommand>(),
-    }
-)
+  new Client({
+    intents: [
+      GatewayIntentBits.Guilds,
+      GatewayIntentBits.GuildMembers,
+      GatewayIntentBits.GuildMessages,
+      GatewayIntentBits.MessageContent,
+      GatewayIntentBits.GuildVoiceStates,
+      GatewayIntentBits.GuildIntegrations,
+      GatewayIntentBits.DirectMessages,
+    ],
+    partials: [Partials.Channel],
+  }),
+  {
+    commands: new Collection<string, ApplicationCommand>(),
+    msgCommands: new Collection<string, MessageCommand>(),
+    memberInfos: new Collection<Snowflake, MemberInfo>(),
+  }
+);
 
 // Set each command in the commands folder as a command in the client.commands collection
 const commandFiles: string[] = readdirSync('./commands').filter(
-    (file) => file.endsWith('.js') || file.endsWith('.ts')
-)
+  (file) => file.endsWith('.js') || file.endsWith('.ts')
+);
 for (const file of commandFiles) {
-    const command: ApplicationCommand = (await import(`./commands/${file}`))
-        .default as ApplicationCommand
-    client.commands.set(command.data.name, command)
+  const command: ApplicationCommand = (await import(`./commands/${file}`))
+    .default as ApplicationCommand;
+  client.commands.set(command.data.name, command);
 }
 
 const msgCommandFiles: string[] = readdirSync('./messageCommands').filter(
-    (file) => file.endsWith('.js') || file.endsWith('.ts')
-)
+  (file) => file.endsWith('.js') || file.endsWith('.ts')
+);
 for (const file of msgCommandFiles) {
-    const command: MessageCommand = (await import(`./messageCommands/${file}`))
-        .default as MessageCommand
-    client.msgCommands.set(command.name, command)
+  const command: MessageCommand = (await import(`./messageCommands/${file}`))
+    .default as MessageCommand;
+  client.msgCommands.set(command.name, command);
 }
 
 // Event handling
 const eventFiles: string[] = readdirSync('./events').filter(
-    (file) => file.endsWith('.js') || file.endsWith('.ts')
-)
+  (file) => file.endsWith('.js') || file.endsWith('.ts')
+);
 
 for (const file of eventFiles) {
-    const event: Event = (await import(`./events/${file}`)).default as Event
-    if (event.once) {
-        client.once(event.name, (...args) => event.execute(...args))
-    } else {
-        client.on(event.name, (...args) => event.execute(...args))
-    }
+  const event: Event = (await import(`./events/${file}`)).default as Event;
+  if (event.once) {
+    client.once(event.name, (...args) => event.execute(...args));
+  } else {
+    client.on(event.name, (...args) => event.execute(...args));
+  }
 }
 
-await client.login(TOKEN)
+await client.login(TOKEN);

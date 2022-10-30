@@ -6,7 +6,7 @@ export default new Event({
   name: Events.InteractionCreate,
   async execute(interaction: BaseInteraction): Promise<void> {
     // Dynamically handle slash commands
-    if (!interaction.isChatInputCommand()) return;
+    if (!interaction.isUserContextMenuCommand()) return;
 
     if (!client.commands.has(interaction.commandName)) return;
 
@@ -14,6 +14,7 @@ export default new Event({
       const command: ApplicationCommand = (await client.commands.get(
         interaction.commandName
       )) as ApplicationCommand;
+
       await command.execute(interaction);
     } catch (error) {
       console.error(error);
