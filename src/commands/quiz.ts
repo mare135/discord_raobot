@@ -4,8 +4,8 @@ import {
   Snowflake,
   userMention,
 } from 'discord.js';
-import MemberInfo from '../classes/MemberInfo.js';
-import ApplicationCommand from '../templates/ApplicationCommand.js';
+import { giveUserPoint } from '../functions/pointFunctions.js';
+import ApplicationCommand from '../base/ApplicationCommand.js';
 
 export default new ApplicationCommand({
   data: new SlashCommandBuilder()
@@ -25,7 +25,6 @@ export default new ApplicationCommand({
     const answer = data[0]?.value as string;
     const timeLimit = (data[1]?.value as number) * 1000;
     const point = data[2]?.value as number;
-    const { memberInfos } = client;
 
     console.log(`${answer} and ${timeLimit}`);
 
@@ -66,11 +65,7 @@ export default new ApplicationCommand({
 
       for (const member of members.keys()) {
         correntPeopleText += `${userMention(member)}  `;
-        if (!memberInfos.has(member)) {
-          memberInfos.set(member, new MemberInfo(member, point));
-        } else {
-          memberInfos.get(member)?.add(point);
-        }
+        giveUserPoint(member, point);
       }
       await interaction.followUp(correntPeopleText);
     } catch (e) {

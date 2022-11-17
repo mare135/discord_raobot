@@ -9,11 +9,15 @@ import {
   Snowflake,
 } from 'discord.js';
 import { readdirSync } from 'fs';
-import type ApplicationCommand from './templates/ApplicationCommand.js';
-import type Event from './templates/Event.js';
-import type MessageCommand from './templates/MessageCommand.js';
+import type ApplicationCommand from './base/ApplicationCommand.js';
+import type Event from './base/Event.js';
+import type MessageCommand from './base/MessageCommand.js';
 import deployGlobalCommands from './deployGlobalCommands.js';
 import type MemberInfo from './classes/MemberInfo.js';
+import type ModalComponent from './base/ModalComponent.js';
+import type GuildVoiceController from './classes/GuildVoiceController.js';
+import { generateDependencyReport } from '@discordjs/voice';
+
 const { TOKEN } = process.env;
 
 await deployGlobalCommands();
@@ -36,6 +40,8 @@ global.client = Object.assign(
     commands: new Collection<string, ApplicationCommand>(),
     msgCommands: new Collection<string, MessageCommand>(),
     memberInfos: new Collection<Snowflake, MemberInfo>(),
+    modals: new Collection<string, ModalComponent>(),
+    guildVoiceControllers: new Collection<Snowflake, GuildVoiceController>(),
   }
 );
 
@@ -72,4 +78,17 @@ for (const file of eventFiles) {
   }
 }
 
+// Event handling
+const modalFiles: string[] = readdirSync('./components/modals').filter(
+  (file) => file.endsWith('.js') || file.endsWith('.ts')
+);
+
+for (const file of modalFiles) {
+  const modal: ModalComponent = (await import(`./components/modals/${file}`))
+    .default as ModalComponent;
+  client.modals.set(modal.data.name, modal);
+}
+
 await client.login(TOKEN);
+
+console.log(generateDependencyReport());

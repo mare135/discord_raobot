@@ -1,42 +1,43 @@
-import type MessageCommand from '../templates/MessageCommand.js';
-import Event from '../templates/Event.js';
+import Event from '../base/Event.js';
 import { Events, Message } from 'discord.js';
-
-const { prefix } = await import('../config.json', {
-  assert: { type: 'json' },
-});
+import { detectLanguage } from '../functions/detectLanguage.js';
+import GoogleTTSProvider, {
+  GoogleTTSName,
+} from '../classes/providers/GoogleTTSProvider.js';
+import { GoogleTranslateLanguage } from '../classes/providers/GoogleTranslateTTSProvider.js';
 
 export default new Event({
   name: Events.MessageCreate,
   async execute(message: Message): Promise<void> {
-    // ! Message content is a priviliged intent now!
+    if (message.author.bot) return;
+    if (!message.guildId) return;
 
-    // Handles non-slash commands, only recommended for deploy commands
+    const guildVoiceController = client.guildVoiceControllers.get(
+      message.guildId
+    );
+    if (!guildVoiceController) return;
 
-    // filters out bots and non-prefixed messages
-    if (!message.content.startsWith(prefix) || message.author.bot) return;
+    if (guildVoiceController.textChannel.id === message.channelId) {
+      const detectedLanguageCode = await detectLanguage(message.content);
 
-    // fetches the application owner for the bot
-    if (!client.application?.owner) await client.application?.fetch();
+      let lang: GoogleTranslateLanguage;
+      let voiceName: GoogleTTSName;
+      if (detectedLanguageCode === 'ko') {
+        lang = GoogleTranslateLanguage.KOREAN;
+        voiceName = GoogleTTSName.KR_STANDARD_A;
+      } else {
+        lang = GoogleTranslateLanguage.JAPANESE;
+        voiceName = GoogleTTSName.JP_STANDARD_B;
+      }
 
-    // get the arguments and the actual command name for the inputted command
-    const args = message.content.slice(prefix.length).trim().split(/ +/);
-    const commandName = (<string>args.shift()).toLowerCase();
+      const payloads = await new GoogleTTSProvider(message.content, {
+        lang: lang,
+        voiceName: voiceName,
+      }).createPayload();
 
-    const command =
-      (client.msgCommands.get(commandName) as MessageCommand) ||
-      (client.msgCommands.find(
-        (cmd: MessageCommand): boolean =>
-          cmd.aliases && cmd.aliases.includes(commandName)
-      ) as MessageCommand);
-
-    // dynamic command handling
-    if (!command) return;
-
-    try {
-      await command.execute(message, args);
-    } catch (error) {
-      console.error(error);
+      payloads.forEach((payload) => {
+        guildVoiceController.push(payload).catch((e) => console.log(e));
+      });
     }
   },
 });

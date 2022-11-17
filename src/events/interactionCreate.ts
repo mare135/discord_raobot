@@ -1,6 +1,6 @@
 import { BaseInteraction, Events } from 'discord.js';
-import type ApplicationCommand from '../templates/ApplicationCommand.js';
-import Event from '../templates/Event.js';
+import type ApplicationCommand from '../base/ApplicationCommand.js';
+import Event from '../base/Event.js';
 
 export default new Event({
   name: Events.InteractionCreate,

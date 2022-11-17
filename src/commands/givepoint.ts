@@ -6,30 +6,41 @@ import {
   ModalBuilder,
   TextInputBuilder,
   TextInputStyle,
+  UserContextMenuCommandInteraction,
 } from 'discord.js';
-import ApplicationCommand from '../templates/ApplicationCommand.js';
+import ContextCommand from '../base/ContextCommand.js';
 
-export default new ApplicationCommand({
+export default new ContextCommand({
   data: new ContextMenuCommandBuilder()
     .setName('give point')
     .setType(ApplicationCommandType.User),
 
-  async execute(interaction): Promise<void> {
+  async execute(interaction: UserContextMenuCommandInteraction): Promise<void> {
     const givePointModal = new ModalBuilder()
       .setCustomId('pointModal')
       .setTitle('ポイントを与えます');
+
+    const userInput = new TextInputBuilder()
+      .setCustomId('userIdInput')
+      .setLabel('この値は変えないでください')
+      .setValue(interaction.targetUser.id)
+      .setStyle(TextInputStyle.Short);
 
     const pointInput = new TextInputBuilder()
       .setCustomId('pointInput')
       .setLabel('与えるポイント')
       .setStyle(TextInputStyle.Short);
 
-    const actionRow =
+    const firstActionRow =
+      new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
+        userInput
+      );
+    const secondActionRow =
       new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
         pointInput
       );
 
-    givePointModal.addComponents(actionRow);
+    givePointModal.addComponents(firstActionRow, secondActionRow);
     console.log('givepoint!');
 
     await interaction.showModal(givePointModal);

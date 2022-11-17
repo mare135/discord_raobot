@@ -4,12 +4,7 @@ import type {
   ContextMenuCommandBuilder,
   SlashCommandBuilder,
   SlashCommandSubcommandsOnlyBuilder,
-  UserContextMenuCommandInteraction,
 } from 'discord.js';
-
-type tInteraction =
-  | ChatInputCommandInteraction
-  | UserContextMenuCommandInteraction;
 
 /**
  * Represents an Application Command
@@ -21,13 +16,13 @@ export default class ApplicationCommand {
     | SlashCommandSubcommandsOnlyBuilder
     | Omit<SlashCommandBuilder, 'addSubcommand' | 'addSubcommandGroup'>;
   hasSubCommands: boolean;
-  execute: (interaction: tInteraction) => Promise<void> | void;
+  execute: (interaction: ChatInputCommandInteraction) => Promise<void> | void;
 
   /**
    * @param {{
    *      data: SlashCommandBuilder | ContextMenuCommandBuilder | SlashCommandSubcommandsOnlyBuilder | Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">
    *      hasSubCommands?: boolean
-   *      execute?: (interaction: tInteraction) => Promise<void> | void
+   *      execute?: (interaction: ChatInputCommandInteraction) => Promise<void> | void
    *  }} options - The options for the slash command
    */
   constructor(options: {
@@ -37,7 +32,7 @@ export default class ApplicationCommand {
       | SlashCommandSubcommandsOnlyBuilder
       | Omit<SlashCommandBuilder, 'addSubcommand' | 'addSubcommandGroup'>;
     hasSubCommands?: boolean;
-    execute: (interaction: tInteraction) => Promise<void> | void;
+    execute: (interaction: ChatInputCommandInteraction) => Promise<void> | void;
   }) {
     this.execute = options.execute;
     this.data = options.data;

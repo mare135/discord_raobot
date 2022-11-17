@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
 import { readdirSync } from 'fs';
-import type ApplicationCommand from '../templates/ApplicationCommand.js';
-import MessageCommand from '../templates/MessageCommand.js';
+import type ApplicationCommand from '../base/ApplicationCommand.js';
+import MessageCommand from '../base/MessageCommand.js';
 import { REST } from '@discordjs/rest';
 import { RESTPostAPIApplicationCommandsJSONBody, Routes } from 'discord.js';
 const { TOKEN, CLIENT_ID } = process.env as {

@@ -1,4 +1,4 @@
-import MessageCommand from '../templates/MessageCommand.js';
+import MessageCommand from '../base/MessageCommand.js';
 
 const { prefix } = await import('../config.json', {
   assert: { type: 'json' },

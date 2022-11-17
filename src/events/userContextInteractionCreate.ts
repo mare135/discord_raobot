@@ -1,19 +1,17 @@
-import { BaseInteraction, Events } from 'discord.js';
-import type ApplicationCommand from '../templates/ApplicationCommand.js';
-import Event from '../templates/Event.js';
+import { Events, UserContextMenuCommandInteraction } from 'discord.js';
+import type ContextCommand from '../base/ContextCommand.js';
+import Event from '../base/Event.js';
 
 export default new Event({
   name: Events.InteractionCreate,
-  async execute(interaction: BaseInteraction): Promise<void> {
+  async execute(interaction: UserContextMenuCommandInteraction): Promise<void> {
     // Dynamically handle slash commands
     if (!interaction.isUserContextMenuCommand()) return;
 
-    if (!client.commands.has(interaction.commandName)) return;
-
     try {
-      const command: ApplicationCommand = (await client.commands.get(
+      const command: ContextCommand = (await client.commands.get(
         interaction.commandName
-      )) as ApplicationCommand;
+      )) as ContextCommand;
 
       await command.execute(interaction);
     } catch (error) {
