@@ -33,7 +33,7 @@ export default new Event({
       const payloads = await new GoogleTTSProvider(message.content, {
         lang: lang,
         voiceName: voiceName,
-      }).createPayload();
+      }).createPayload(guildVoiceController.folderPath);
 
       payloads.forEach((payload) => {
         guildVoiceController.push(payload).catch((e) => console.log(e));

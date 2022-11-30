@@ -33,6 +33,7 @@ export default new ApplicationCommand({
       await voice.connect(voiceChannel);
 
       const guildVoiceController = new GuildVoiceController(
+        interaction.guild.id,
         voiceChannel,
         interaction.channel,
         voice
