@@ -3,27 +3,53 @@ import {
   createAudioResource,
   entersState,
 } from '@discordjs/voice';
-import type { TextBasedChannel, VoiceBasedChannel } from 'discord.js';
+import type {
+  Snowflake,
+  TextBasedChannel,
+  VoiceBasedChannel,
+} from 'discord.js';
 import type Payload from './Payload';
 import type { VoiceManager } from './VoiceManager';
+import path from 'path';
+import { createTempString } from '../functions/utils.js';
+import fs from 'fs';
 
 export default class GuildVoiceController {
+  guildId: Snowflake;
   voiceChannel: VoiceBasedChannel;
   textChannel: TextBasedChannel;
   voiceManager: VoiceManager;
   voiceQueue: Payload[];
   isSpeaking: boolean;
+  folderPath: string;
 
   constructor(
+    guildId: Snowflake,
     voiceChannel: VoiceBasedChannel,
     textChannel: TextBasedChannel,
     voiceManager: VoiceManager
   ) {
+    this.guildId = guildId;
     this.voiceChannel = voiceChannel;
     this.textChannel = textChannel;
     this.voiceManager = voiceManager;
     this.voiceQueue = [];
     this.isSpeaking = false;
+
+    const __dirname = path.resolve();
+
+    this.folderPath = path.join(__dirname, '..', 'resources');
+
+    // make resource folder
+
+    // if there is resource no directory
+    if (!fs.existsSync(this.folderPath)) {
+      fs.mkdirSync(this.folderPath);
+    }
+
+    // make temp directory
+    this.folderPath = path.join(this.folderPath, createTempString());
+    fs.mkdirSync(this.folderPath);
 
     this.voiceManager.player.on(AudioPlayerStatus.Idle, () => {
       this.isSpeaking = false;
@@ -93,5 +119,15 @@ export default class GuildVoiceController {
       console.log('push method catch error : ' + String(error));
       await this.play();
     }
+  }
+
+  delete() {
+    fs.rm(this.folderPath, { recursive: true, force: true }, (error) => {
+      if (error === null) {
+        return;
+      }
+      console.log('folder delete error', error);
+    });
+    client.guildVoiceControllers.delete(this.guildId);
   }
 }

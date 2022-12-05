@@ -5,6 +5,7 @@ import GoogleTTSProvider, {
   GoogleTTSName,
 } from '../classes/providers/GoogleTTSProvider.js';
 import { GoogleTranslateLanguage } from '../classes/providers/GoogleTranslateTTSProvider.js';
+import { filterContent } from '../functions/checkContent.js';
 
 export default new Event({
   name: Events.MessageCreate,
@@ -18,7 +19,9 @@ export default new Event({
     if (!guildVoiceController) return;
 
     if (guildVoiceController.textChannel.id === message.channelId) {
-      const detectedLanguageCode = await detectLanguage(message.content);
+      const contentText = filterContent(message.content);
+
+      const detectedLanguageCode = await detectLanguage(contentText);
 
       let lang: GoogleTranslateLanguage;
       let voiceName: GoogleTTSName;
@@ -30,10 +33,10 @@ export default new Event({
         voiceName = GoogleTTSName.JP_STANDARD_B;
       }
 
-      const payloads = await new GoogleTTSProvider(message.content, {
+      const payloads = await new GoogleTTSProvider(contentText, {
         lang: lang,
         voiceName: voiceName,
-      }).createPayload();
+      }).createPayload(guildVoiceController.folderPath);
 
       payloads.forEach((payload) => {
         guildVoiceController.push(payload).catch((e) => console.log(e));

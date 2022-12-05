@@ -92,3 +92,4 @@ for (const file of modalFiles) {
 await client.login(TOKEN);
 
 console.log(generateDependencyReport());
+console.log(process.argv);

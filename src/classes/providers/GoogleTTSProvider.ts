@@ -4,6 +4,7 @@ import { Provider } from './Provider.js';
 import googleTTS from '@google-cloud/text-to-speech';
 import { createFileName } from '../../functions/utils.js';
 import fs from 'fs/promises';
+import path from 'path';
 
 export enum GoogleTTSName {
   KR_STANDARD_A = 'ko-KR-Standard-A',
@@ -23,7 +24,7 @@ export default class GoogleTTSProvider extends Provider {
     this.extras = extras;
   }
 
-  async createPayload(): Promise<Payload[]> {
+  async createPayload(folderPath: string): Promise<Payload[]> {
     const request = {
       input: { text: this.sentence },
       voice: { languageCode: this.extras.lang, name: this.extras.voiceName },
@@ -33,7 +34,9 @@ export default class GoogleTTSProvider extends Provider {
     };
     const [response] = await googleClient.synthesizeSpeech(request);
     const fileName = createFileName('googleTTS');
-    const filePath = '../../../resources/googleTTS/' + fileName;
+
+    const filePath = path.join(folderPath, fileName);
+    console.log(filePath);
 
     if (!response.audioContent) {
       throw new Error('no googleTTS audio content');

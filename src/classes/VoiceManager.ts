@@ -72,6 +72,13 @@ export class VoiceManager {
           );
         }
       });
+
+      connection.on(VoiceConnectionStatus.Destroyed, () => {
+        const guildVoiceController = client.guildVoiceControllers.get(
+          this.guild.id
+        );
+        guildVoiceController?.delete();
+      });
     });
   }
 

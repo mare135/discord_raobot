@@ -1,0 +1,22 @@
+import { Events } from 'discord.js';
+import Event from '../base/Event.js';
+export default new Event({
+    name: Events.InteractionCreate,
+    async execute(interaction) {
+        if (!interaction.isModalSubmit())
+            return;
+        try {
+            const modal = client.modals.get(interaction.customId);
+            if (!modal)
+                return;
+            await modal.execute(interaction);
+        }
+        catch (error) {
+            console.error(error);
+            await interaction.reply({
+                content: 'error on modalInteractionCreate',
+                ephemeral: true,
+            });
+        }
+    },
+});

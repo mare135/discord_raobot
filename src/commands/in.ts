@@ -8,7 +8,7 @@ import ApplicationCommand from '../base/ApplicationCommand.js';
 
 export default new ApplicationCommand({
   data: new SlashCommandBuilder()
-    .setName('join')
+    .setName('in')
     .setDescription('ボットがVCに参加します'),
 
   async execute(interaction): Promise<void> {
@@ -33,6 +33,7 @@ export default new ApplicationCommand({
       await voice.connect(voiceChannel);
 
       const guildVoiceController = new GuildVoiceController(
+        interaction.guild.id,
         voiceChannel,
         interaction.channel,
         voice

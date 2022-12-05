@@ -5,7 +5,6 @@
     "*.{ts,css,md}": "prettier --write"
   },
   "scripts": {
-    "prepare": "husky install",
     "lint": "eslint --cache --fix src",
     "prettier": "prettier --write src",
     "compile": "tsc",
