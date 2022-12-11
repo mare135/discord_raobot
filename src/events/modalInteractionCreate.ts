@@ -1,4 +1,4 @@
-import { BaseInteraction, Events } from 'discord.js';
+import { BaseInteraction, Events, TextBasedChannel } from 'discord.js';
 import Event from '../base/Event.js';
 
 export default new Event({
@@ -14,9 +14,18 @@ export default new Event({
       await modal.execute(interaction);
     } catch (error) {
       console.error(error);
-      await interaction.reply({
-        content: 'error on modalInteractionCreate',
-        ephemeral: true,
+
+      const logChannel = client.channels.cache.get(
+        '1051414468246110238'
+      ) as TextBasedChannel;
+
+      if (!logChannel) {
+        console.log('ERROR NO LOG CHANNEL');
+        return;
+      }
+
+      await logChannel.send({
+        content: 'modal interaction error ',
       });
     }
   },

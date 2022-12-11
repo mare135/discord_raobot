@@ -40,6 +40,7 @@ export default new ModalComponent({
       await logChannel.send({
         content: `${userMention(member.id)}タイトル変更：${newChannel.name}`,
       });
+
       await interaction.deferReply();
       await interaction.deleteReply();
     } catch (error) {

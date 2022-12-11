@@ -13,9 +13,13 @@ export default new Event({
         }
         catch (error) {
             console.error(error);
-            await interaction.reply({
-                content: 'error on modalInteractionCreate',
-                ephemeral: true,
+            const logChannel = client.channels.cache.get('1051414468246110238');
+            if (!logChannel) {
+                console.log('ERROR NO LOG CHANNEL');
+                return;
+            }
+            await logChannel.send({
+                content: 'modal interaction error ',
             });
         }
     },
