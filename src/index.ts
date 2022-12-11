@@ -17,6 +17,7 @@ import type MemberInfo from './classes/MemberInfo.js';
 import type ModalComponent from './base/ModalComponent.js';
 import type GuildVoiceController from './classes/GuildVoiceController.js';
 import { generateDependencyReport } from '@discordjs/voice';
+import BaseButtonComponent from './base/ButtonComponent.js';
 
 const { TOKEN } = process.env;
 
@@ -41,6 +42,7 @@ global.client = Object.assign(
     msgCommands: new Collection<string, MessageCommand>(),
     memberInfos: new Collection<Snowflake, MemberInfo>(),
     modals: new Collection<string, ModalComponent>(),
+    buttons: new Collection<string, BaseButtonComponent>(),
     guildVoiceControllers: new Collection<Snowflake, GuildVoiceController>(),
   }
 );
@@ -78,7 +80,7 @@ for (const file of eventFiles) {
   }
 }
 
-// Event handling
+// Modal handling
 const modalFiles: string[] = readdirSync('./components/modals').filter(
   (file) => file.endsWith('.js') || file.endsWith('.ts')
 );
@@ -87,6 +89,18 @@ for (const file of modalFiles) {
   const modal: ModalComponent = (await import(`./components/modals/${file}`))
     .default as ModalComponent;
   client.modals.set(modal.data.name, modal);
+}
+
+// Modal handling
+const buttonFiles: string[] = readdirSync('./components/buttons').filter(
+  (file) => file.endsWith('.js') || file.endsWith('.ts')
+);
+
+for (const file of buttonFiles) {
+  const button: BaseButtonComponent = (
+    await import(`./components/buttons/${file}`)
+  ).default as BaseButtonComponent;
+  client.buttons.set(button.data.name, button);
 }
 
 await client.login(TOKEN);

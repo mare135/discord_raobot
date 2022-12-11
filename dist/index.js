@@ -21,6 +21,7 @@ global.client = Object.assign(new Client({
     msgCommands: new Collection(),
     memberInfos: new Collection(),
     modals: new Collection(),
+    buttons: new Collection(),
     guildVoiceControllers: new Collection(),
 });
 const commandFiles = readdirSync('./commands').filter((file) => file.endsWith('.js') || file.endsWith('.ts'));
@@ -50,6 +51,11 @@ for (const file of modalFiles) {
     const modal = (await import(`./components/modals/${file}`))
         .default;
     client.modals.set(modal.data.name, modal);
+}
+const buttonFiles = readdirSync('./components/buttons').filter((file) => file.endsWith('.js') || file.endsWith('.ts'));
+for (const file of buttonFiles) {
+    const button = (await import(`./components/buttons/${file}`)).default;
+    client.buttons.set(button.data.name, button);
 }
 await client.login(TOKEN);
 console.log(generateDependencyReport());

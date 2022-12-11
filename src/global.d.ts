@@ -5,12 +5,14 @@ import MessageCommand from '../templates/MessageCommand';
 import type GuildVoiceController from './classes/GuildVoiceController';
 import type MemberInfo from './classes/MemberInfo';
 import type ModalComponent from './base/ModalComponent';
+import BaseButtonComponent from './base/ButtonComponent';
 
 interface DiscordClient extends Client {
   commands: Collection<string, ApplicationCommand>;
   msgCommands: Collection<string, MessageCommand>;
   memberInfos: Collection<Snowflake, MemberInfo>;
   modals: Collection<string, ModalComponent>;
+  buttons: Collection<string, BaseButtonComponent>;
   guildVoiceControllers: Collection<Snowflake, GuildVoiceController>;
 }
 
