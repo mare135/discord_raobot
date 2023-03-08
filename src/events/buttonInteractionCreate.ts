@@ -14,10 +14,10 @@ export default new Event({
       await button.execute(interaction);
     } catch (error) {
       console.error(error);
-      await interaction.reply({
-        content: 'error on buttonInteractionCreate',
-        ephemeral: true,
-      });
+      // await interaction.reply({
+      //   content: 'error on buttonInteractionCreate',
+      //   ephemeral: true,
+      // });
     }
   },
 });

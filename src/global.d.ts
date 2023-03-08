@@ -16,8 +16,15 @@ interface DiscordClient extends Client {
   guildVoiceControllers: Collection<Snowflake, GuildVoiceController>;
 }
 
+export enum ProductName {
+  RAO = 'RAO',
+  SHABERUKO = 'SHABERUKO',
+  SHABERUUSA = 'SHABERUUSA',
+}
+
 declare global {
   var client: DiscordClient;
+  var productName: ProductName;
 
   type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 }

@@ -18,8 +18,11 @@ import type ModalComponent from './base/ModalComponent.js';
 import type GuildVoiceController from './classes/GuildVoiceController.js';
 import { generateDependencyReport } from '@discordjs/voice';
 import BaseButtonComponent from './base/ButtonComponent.js';
+import { ProductName } from './global.js';
 
 const { TOKEN } = process.env;
+// RAOBOT, SHABERUKO, SHABERUUSA 구분
+productName = process.env.PRODUCT_NAME as ProductName;
 
 await deployGlobalCommands();
 

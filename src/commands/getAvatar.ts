@@ -1,6 +1,7 @@
 import {
   ApplicationCommandType,
   ContextMenuCommandBuilder,
+  TextBasedChannel,
   UserContextMenuCommandInteraction,
 } from 'discord.js';
 import ContextCommand from '../base/ContextCommand.js';
@@ -11,7 +12,16 @@ export default new ContextCommand({
     .setType(ApplicationCommandType.User),
 
   async execute(interaction: UserContextMenuCommandInteraction): Promise<void> {
-    await interaction.reply({
+    const logChannel = client.channels.cache.get(
+      '716963970560426004'
+    ) as TextBasedChannel;
+
+    if (!logChannel) {
+      await interaction.reply('no log channel');
+      return;
+    }
+
+    await logChannel.send({
       content: `${interaction.targetUser.displayAvatarURL()}`,
     });
   },
