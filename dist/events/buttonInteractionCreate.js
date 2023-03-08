@@ -13,10 +13,6 @@ export default new Event({
         }
         catch (error) {
             console.error(error);
-            await interaction.reply({
-                content: 'error on buttonInteractionCreate',
-                ephemeral: true,
-            });
         }
     },
 });

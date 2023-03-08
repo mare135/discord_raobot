@@ -5,7 +5,12 @@ export default new ContextCommand({
         .setName('アイコン確認')
         .setType(ApplicationCommandType.User),
     async execute(interaction) {
-        await interaction.reply({
+        const logChannel = client.channels.cache.get('716963970560426004');
+        if (!logChannel) {
+            await interaction.reply('no log channel');
+            return;
+        }
+        await logChannel.send({
             content: `${interaction.targetUser.displayAvatarURL()}`,
         });
     },
