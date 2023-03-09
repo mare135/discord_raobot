@@ -4,6 +4,7 @@ import { readdirSync } from 'fs';
 import deployGlobalCommands from './deployGlobalCommands.js';
 import { generateDependencyReport } from '@discordjs/voice';
 const { TOKEN } = process.env;
+global.productName = process.env.PRODUCT_NAME;
 await deployGlobalCommands();
 global.client = Object.assign(new Client({
     intents: [

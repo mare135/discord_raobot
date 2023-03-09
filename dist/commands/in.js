@@ -3,6 +3,7 @@ import GuildVoiceController from '../classes/GuildVoiceController.js';
 import GoogleTranslateProvider, { GoogleTranslateLanguage, } from '../classes/providers/GoogleTranslateTTSProvider.js';
 import { VoiceManager } from '../classes/VoiceManager.js';
 import ApplicationCommand from '../base/ApplicationCommand.js';
+import { ProductName } from '../base/Const.js';
 export default new ApplicationCommand({
     data: new SlashCommandBuilder()
         .setName('in')
@@ -28,7 +29,21 @@ export default new ApplicationCommand({
             await interaction.editReply({
                 content: 'connection success',
             });
-            const googlePayloads = await new GoogleTranslateProvider('らおぼっとが参加しました！', { lang: GoogleTranslateLanguage.JAPANESE }).createPayload();
+            let botName = '';
+            switch (productName) {
+                case ProductName.RAO:
+                    botName += 'らおボット';
+                    break;
+                case ProductName.SHABERUKO:
+                    botName += '喋る子ボット';
+                    break;
+                case ProductName.SHABERUUSA:
+                    botName += '喋るウサボット';
+                    break;
+                default:
+                    break;
+            }
+            const googlePayloads = await new GoogleTranslateProvider(botName + 'が参加しました！', { lang: GoogleTranslateLanguage.JAPANESE }).createPayload();
             googlePayloads.forEach((payload) => {
                 guildVoiceController.push(payload).catch((error) => console.log(error));
             });
