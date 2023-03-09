@@ -3,6 +3,7 @@ import { Client, GatewayIntentBits, Collection, Partials, } from 'discord.js';
 import { readdirSync } from 'fs';
 import deployGlobalCommands from './deployGlobalCommands.js';
 import { generateDependencyReport } from '@discordjs/voice';
+import { ProductName } from './base/Const.js';
 const { TOKEN } = process.env;
 global.productName = process.env.PRODUCT_NAME;
 await deployGlobalCommands();
@@ -25,11 +26,19 @@ global.client = Object.assign(new Client({
     buttons: new Collection(),
     guildVoiceControllers: new Collection(),
 });
-const commandFiles = readdirSync('./commands').filter((file) => file.endsWith('.js') || file.endsWith('.ts'));
-for (const file of commandFiles) {
-    const command = (await import(`./commands/${file}`))
+const voiceCommandFiles = readdirSync('./voiceCommands').filter((file) => file.endsWith('.js') || file.endsWith('.ts'));
+for (const file of voiceCommandFiles) {
+    const command = (await import(`./voiceCommands/${file}`))
         .default;
     client.commands.set(command.data.name, command);
+}
+if (productName === ProductName.RAO) {
+    const commandFiles = readdirSync('./commands').filter((file) => file.endsWith('.js') || file.endsWith('.ts'));
+    for (const file of commandFiles) {
+        const command = (await import(`./commands/${file}`))
+            .default;
+        client.commands.set(command.data.name, command);
+    }
 }
 const msgCommandFiles = readdirSync('./messageCommands').filter((file) => file.endsWith('.js') || file.endsWith('.ts'));
 for (const file of msgCommandFiles) {
