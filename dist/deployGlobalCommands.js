@@ -12,6 +12,7 @@ export default async function deployGlobalCommands() {
         commands.push(commandData);
     }
     if (productName === ProductName.RAO) {
+        console.log('PRODUCT NAME : ' + ProductName.RAO);
         const commandFiles = readdirSync('./commands').filter((file) => file.endsWith('.js') || file.endsWith('.ts'));
         for (const file of commandFiles) {
             const command = (await import(`./commands/${file}`))
@@ -31,6 +32,7 @@ export default async function deployGlobalCommands() {
         await rest.put(Routes.applicationCommands(CLIENT_ID), {
             body: commands,
         });
+        console.log(commands);
         console.log('Successfully reloaded application (/) commands.');
     }
     catch (error) {

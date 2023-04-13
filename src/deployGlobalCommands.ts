@@ -3,19 +3,38 @@ import { REST } from '@discordjs/rest';
 import { RESTPostAPIApplicationCommandsJSONBody, Routes } from 'discord.js';
 import { readdirSync } from 'fs';
 import type ApplicationCommand from './base/ApplicationCommand';
+import { ProductName } from './base/Const.js';
 const { TOKEN, CLIENT_ID, DEFAULT_GUILD_ID } = process.env;
 
 export default async function deployGlobalCommands() {
   const commands: RESTPostAPIApplicationCommandsJSONBody[] = [];
-  const commandFiles: string[] = readdirSync('./commands').filter(
+
+  // general commands
+  const voiceCommandFiles: string[] = readdirSync('./voiceCommands').filter(
     (file) => file.endsWith('.js') || file.endsWith('.ts')
   );
 
-  for (const file of commandFiles) {
-    const command: ApplicationCommand = (await import(`./commands/${file}`))
-      .default as ApplicationCommand;
+  for (const file of voiceCommandFiles) {
+    const command: ApplicationCommand = (
+      await import(`./voiceCommands/${file}`)
+    ).default as ApplicationCommand;
     const commandData = command.data.toJSON();
     commands.push(commandData);
+  }
+
+  if (productName === ProductName.RAO) {
+    console.log('PRODUCT NAME : ' + ProductName.RAO);
+    // raobot commands
+    const commandFiles: string[] = readdirSync('./commands').filter(
+      (file) => file.endsWith('.js') || file.endsWith('.ts')
+    );
+
+    for (const file of commandFiles) {
+      const command: ApplicationCommand = (await import(`./commands/${file}`))
+        .default as ApplicationCommand;
+      const commandData = command.data.toJSON();
+      commands.push(commandData);
+    }
   }
 
   const rest = new REST({ version: '10' }).setToken(TOKEN as string);

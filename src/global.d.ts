@@ -6,6 +6,7 @@ import type GuildVoiceController from './classes/GuildVoiceController';
 import type MemberInfo from './classes/MemberInfo';
 import type ModalComponent from './base/ModalComponent';
 import BaseButtonComponent from './base/ButtonComponent';
+import { ProductName } from './base/Const';
 
 interface DiscordClient extends Client {
   commands: Collection<string, ApplicationCommand>;
@@ -14,12 +15,6 @@ interface DiscordClient extends Client {
   modals: Collection<string, ModalComponent>;
   buttons: Collection<string, BaseButtonComponent>;
   guildVoiceControllers: Collection<Snowflake, GuildVoiceController>;
-}
-
-export enum ProductName {
-  RAO = 'RAO',
-  SHABERUKO = 'SHABERUKO',
-  SHABERUUSA = 'SHABERUUSA',
 }
 
 declare global {

@@ -18,11 +18,12 @@ import type ModalComponent from './base/ModalComponent.js';
 import type GuildVoiceController from './classes/GuildVoiceController.js';
 import { generateDependencyReport } from '@discordjs/voice';
 import BaseButtonComponent from './base/ButtonComponent.js';
-import { ProductName } from './global.js';
+import { ProductName } from './base/Const.js';
 
 const { TOKEN } = process.env;
 // RAOBOT, SHABERUKO, SHABERUUSA 구분
-productName = process.env.PRODUCT_NAME as ProductName;
+
+global.productName = process.env.PRODUCT_NAME as ProductName;
 
 await deployGlobalCommands();
 
@@ -51,14 +52,32 @@ global.client = Object.assign(
 );
 
 // Set each command in the commands folder as a command in the client.commands collection
-const commandFiles: string[] = readdirSync('./commands').filter(
+// Voice Commands
+const voiceCommandFiles: string[] = readdirSync('./voiceCommands').filter(
   (file) => file.endsWith('.js') || file.endsWith('.ts')
 );
-for (const file of commandFiles) {
-  const command: ApplicationCommand = (await import(`./commands/${file}`))
+
+for (const file of voiceCommandFiles) {
+  const command: ApplicationCommand = (await import(`./voiceCommands/${file}`))
     .default as ApplicationCommand;
   client.commands.set(command.data.name, command);
 }
+
+// Raobot Commands
+if (productName === ProductName.RAO) {
+  console.log('PRODUCT NAME : ' + ProductName.RAO);
+  const commandFiles: string[] = readdirSync('./commands').filter(
+    (file) => file.endsWith('.js') || file.endsWith('.ts')
+  );
+
+  for (const file of commandFiles) {
+    const command: ApplicationCommand = (await import(`./commands/${file}`))
+      .default as ApplicationCommand;
+    client.commands.set(command.data.name, command);
+  }
+}
+
+console.log(client.commands);
 
 const msgCommandFiles: string[] = readdirSync('./messageCommands').filter(
   (file) => file.endsWith('.js') || file.endsWith('.ts')

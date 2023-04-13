@@ -5,6 +5,7 @@ import GoogleTranslateProvider, {
 } from '../classes/providers/GoogleTranslateTTSProvider.js';
 import { VoiceManager } from '../classes/VoiceManager.js';
 import ApplicationCommand from '../base/ApplicationCommand.js';
+import { ProductName } from '../base/Const.js';
 
 export default new ApplicationCommand({
   data: new SlashCommandBuilder()
@@ -43,8 +44,27 @@ export default new ApplicationCommand({
         content: 'connection success',
       });
 
+      let botName = '';
+
+      switch (productName) {
+        case ProductName.RAO:
+          botName += 'らおボット';
+          break;
+
+        case ProductName.SHABERUKO:
+          botName += '喋る子ボット';
+          break;
+
+        case ProductName.SHABERUUSA:
+          botName += '喋るウサボット';
+          break;
+
+        default:
+          break;
+      }
+
       const googlePayloads = await new GoogleTranslateProvider(
-        'らおぼっとが参加しました！',
+        botName + 'が参加しました！',
         { lang: GoogleTranslateLanguage.JAPANESE }
       ).createPayload();
 

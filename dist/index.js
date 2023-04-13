@@ -33,6 +33,7 @@ for (const file of voiceCommandFiles) {
     client.commands.set(command.data.name, command);
 }
 if (productName === ProductName.RAO) {
+    console.log('PRODUCT NAME : ' + ProductName.RAO);
     const commandFiles = readdirSync('./commands').filter((file) => file.endsWith('.js') || file.endsWith('.ts'));
     for (const file of commandFiles) {
         const command = (await import(`./commands/${file}`))
@@ -40,6 +41,7 @@ if (productName === ProductName.RAO) {
         client.commands.set(command.data.name, command);
     }
 }
+console.log(client.commands);
 const msgCommandFiles = readdirSync('./messageCommands').filter((file) => file.endsWith('.js') || file.endsWith('.ts'));
 for (const file of msgCommandFiles) {
     const command = (await import(`./messageCommands/${file}`))
