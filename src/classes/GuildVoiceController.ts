@@ -89,6 +89,7 @@ export default class GuildVoiceController {
     });
     this.isSpeaking = true;
     console.log('playing : ' + payload.sentence);
+
     this.voiceManager.play(audioResource);
     try {
       await entersState(
