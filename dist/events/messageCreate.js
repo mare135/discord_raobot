@@ -4,6 +4,7 @@ import { detectLanguage } from '../functions/detectLanguage.js';
 import GoogleTTSProvider, { GoogleTTSName, } from '../classes/providers/GoogleTTSProvider.js';
 import { GoogleTranslateLanguage } from '../classes/providers/GoogleTranslateTTSProvider.js';
 import { filterContent } from '../functions/checkContent.js';
+import { getVoiceConnection } from '@discordjs/voice';
 export default new Event({
     name: Events.MessageCreate,
     async execute(message) {
@@ -12,7 +13,7 @@ export default new Event({
         if (!message.guildId)
             return;
         const guildVoiceController = client.guildVoiceControllers.get(message.guildId);
-        if (!guildVoiceController)
+        if (!guildVoiceController || !getVoiceConnection(message.guildId))
             return;
         console.log('messageCreate.ts : Message Created');
         if (guildVoiceController.textChannel.id === message.channelId) {
