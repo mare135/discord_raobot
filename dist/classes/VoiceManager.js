@@ -1,4 +1,4 @@
-import { AudioPlayer, entersState, getVoiceConnection, joinVoiceChannel, VoiceConnectionStatus, } from '@discordjs/voice';
+import { entersState, getVoiceConnection, joinVoiceChannel, VoiceConnectionStatus, createAudioPlayer, NoSubscriberBehavior, } from '@discordjs/voice';
 export class VoiceManager {
     guild;
     player;
@@ -6,7 +6,13 @@ export class VoiceManager {
     channel;
     constructor(guild, options = {}) {
         this.guild = guild;
-        this.player = options.Audioplayer || new AudioPlayer();
+        this.player =
+            options.Audioplayer ||
+                createAudioPlayer({
+                    behaviors: {
+                        noSubscriber: NoSubscriberBehavior.Stop,
+                    },
+                });
         this.readyLock = false;
     }
     connect(channel) {
@@ -42,12 +48,20 @@ export class VoiceManager {
                 if (oldState.status === VoiceConnectionStatus.Connecting ||
                     oldState.status === VoiceConnectionStatus.Ready) {
                     entersState(connection, VoiceConnectionStatus.Ready, 5_000).catch(async (error) => {
-                        console.log('connect error, reconnect!');
+                        console.log('Signalling connect error, connect!');
                         console.log(error);
                         this.disconnect();
                         await this.connect(channel);
                     });
                 }
+            });
+            connection.on(VoiceConnectionStatus.Connecting, () => {
+                entersState(connection, VoiceConnectionStatus.Ready, 5_000).catch(async (error) => {
+                    console.log('Connecting connect error, connect!');
+                    console.log(error);
+                    this.disconnect();
+                    await this.connect(channel);
+                });
             });
             connection.on(VoiceConnectionStatus.Destroyed, () => {
                 const guildVoiceController = client.guildVoiceControllers.get(this.guild.id);

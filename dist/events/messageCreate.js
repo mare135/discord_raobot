@@ -7,6 +7,7 @@ import { filterContent } from '../functions/checkContent.js';
 export default new Event({
     name: Events.MessageCreate,
     async execute(message) {
+        console.log('messageCreate.ts : Message Created');
         if (message.author.bot)
             return;
         if (!message.guildId)

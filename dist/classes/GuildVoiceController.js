@@ -55,7 +55,13 @@ export default class GuildVoiceController {
         });
         this.isSpeaking = true;
         console.log('playing : ' + payload.sentence);
-        this.voiceManager.play(audioResource);
+        try {
+            this.voiceManager.play(audioResource);
+        }
+        catch (error) {
+            console.log('catch ERROR');
+            console.log(error);
+        }
         try {
             await entersState(this.voiceManager.player, AudioPlayerStatus.Playing, 5_000);
         }
