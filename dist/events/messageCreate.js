@@ -7,7 +7,6 @@ import { filterContent } from '../functions/checkContent.js';
 export default new Event({
     name: Events.MessageCreate,
     async execute(message) {
-        console.log('messageCreate.ts : Message Created');
         if (message.author.bot)
             return;
         if (!message.guildId)
@@ -15,6 +14,7 @@ export default new Event({
         const guildVoiceController = client.guildVoiceControllers.get(message.guildId);
         if (!guildVoiceController)
             return;
+        console.log('messageCreate.ts : Message Created');
         if (guildVoiceController.textChannel.id === message.channelId) {
             const contentText = filterContent(message.content);
             const detectedLanguageCode = await detectLanguage(contentText);

@@ -50,7 +50,6 @@ export class VoiceManager {
                     entersState(connection, VoiceConnectionStatus.Ready, 5_000).catch(async (error) => {
                         console.log('Signalling connect error, connect!');
                         console.log(error);
-                        this.disconnect();
                         await this.connect(channel);
                     });
                 }
@@ -59,7 +58,6 @@ export class VoiceManager {
                 entersState(connection, VoiceConnectionStatus.Ready, 5_000).catch(async (error) => {
                     console.log('Connecting connect error, connect!');
                     console.log(error);
-                    this.disconnect();
                     await this.connect(channel);
                 });
             });
