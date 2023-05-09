@@ -3,11 +3,7 @@ import {
   createAudioResource,
   entersState,
 } from '@discordjs/voice';
-import type {
-  Snowflake,
-  TextBasedChannel,
-  VoiceBasedChannel,
-} from 'discord.js';
+import { Snowflake, TextBasedChannel, VoiceBasedChannel } from 'discord.js';
 import type Payload from './Payload';
 import type { VoiceManager } from './VoiceManager';
 import path from 'path';
@@ -90,7 +86,12 @@ export default class GuildVoiceController {
     this.isSpeaking = true;
     console.log('playing : ' + payload.sentence);
 
-    this.voiceManager.play(audioResource);
+    try {
+      this.voiceManager.play(audioResource);
+    } catch (error) {
+      console.log('catch ERROR');
+      console.log(error);
+    }
     try {
       await entersState(
         this.voiceManager.player,

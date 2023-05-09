@@ -6,6 +6,7 @@ import GoogleTTSProvider, {
 } from '../classes/providers/GoogleTTSProvider.js';
 import { GoogleTranslateLanguage } from '../classes/providers/GoogleTranslateTTSProvider.js';
 import { filterContent } from '../functions/checkContent.js';
+import { getVoiceConnection } from '@discordjs/voice';
 
 export default new Event({
   name: Events.MessageCreate,
@@ -16,7 +17,10 @@ export default new Event({
     const guildVoiceController = client.guildVoiceControllers.get(
       message.guildId
     );
-    if (!guildVoiceController) return;
+
+    if (!guildVoiceController || !getVoiceConnection(message.guildId)) return;
+
+    console.log('messageCreate.ts : Message Created');
 
     if (guildVoiceController.textChannel.id === message.channelId) {
       const contentText = filterContent(message.content);

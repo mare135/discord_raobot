@@ -7,6 +7,8 @@ import {
   getVoiceConnection,
   joinVoiceChannel,
   VoiceConnectionStatus,
+  createAudioPlayer,
+  NoSubscriberBehavior,
 } from '@discordjs/voice';
 
 type VoiceManagerOptions = {
@@ -21,9 +23,16 @@ export class VoiceManager {
 
   constructor(guild: Guild, options: VoiceManagerOptions = {}) {
     this.guild = guild;
-    this.player = options.Audioplayer || new AudioPlayer();
+    this.player =
+      options.Audioplayer ||
+      createAudioPlayer({
+        behaviors: {
+          noSubscriber: NoSubscriberBehavior.Stop,
+        },
+      });
     this.readyLock = false;
   }
+
   connect(channel: Channel) {
     this.channel = channel;
     return new Promise((resolve) => {
@@ -64,7 +73,7 @@ export class VoiceManager {
         ) {
           entersState(connection, VoiceConnectionStatus.Ready, 5_000).catch(
             async (error) => {
-              console.log('connect error, reconnect!');
+              console.log('Signalling connect error, reconnect!');
               console.log(error);
               this.disconnect();
               await this.connect(channel);
@@ -73,12 +82,23 @@ export class VoiceManager {
         }
       });
 
-      connection.on(VoiceConnectionStatus.Destroyed, () => {
-        const guildVoiceController = client.guildVoiceControllers.get(
-          this.guild.id
+      connection.on(VoiceConnectionStatus.Connecting, () => {
+        entersState(connection, VoiceConnectionStatus.Ready, 5_000).catch(
+          async (error) => {
+            console.log('Connecting connect error, reconnect!');
+            console.log(error);
+            this.disconnect();
+            await this.connect(channel);
+          }
         );
-        guildVoiceController?.delete();
       });
+
+      // connection.on(VoiceConnectionStatus.Destroyed, () => {
+      //   const guildVoiceController = client.guildVoiceControllers.get(
+      //     this.guild.id
+      //   );
+      //   guildVoiceController?.delete();
+      // });
     });
   }
 
